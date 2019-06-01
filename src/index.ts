@@ -1,3 +1,4 @@
+// TODO: create style model
 export interface IBeerStyle {
     category: string,
     countryOfOrigin: string,
@@ -5,6 +6,8 @@ export interface IBeerStyle {
     abv: number
 }
 
+
+// TODO: create recipe model
 export interface IBeerRecipe {
     style: IBeerStyle,
     malt: string,
@@ -14,6 +17,7 @@ export interface IBeerRecipe {
     owner: IUser
 }
 
+// TODO: create user model
 export interface IUser {
 
 }
@@ -74,3 +78,15 @@ export interface IUser {
 //      in a to-do list tracker a user might be the owner of a particular 
 //      to-do list. Only they can edit the list. (Others might still be 
 //      able to view it)
+
+require("module-alias/register");
+require("dotenv").config();
+
+import { App } from "@base/app";
+
+/**
+ * entry point for boats api
+ *  - ships routes are protected by Auth0 login using JWT
+ */
+const app = new App();
+app.start();
