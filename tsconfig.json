@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+      "module": "commonjs",
+      "target": "es5",
+      "resolveJsonModule": true,
+      "moduleResolution": "node",
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "allowSyntheticDefaultImports": true,
+      "sourceMap": true,
+      "typeRoots": [
+          "node_modules/@types"
+      ],
+      "types": [
+          "node",
+          "core-js",
+      ],
+      "rootDir": "src",
+      "baseUrl": "src",
+      "paths": {
+          "@controllers/*": ["controllers/*"],
+          "@db/*": ["db/*"],
+          "@lib/*": ["lib/*"],
+          "@models/*": ["models/*"],
+          "@routes/*": ["routes/*"],
+          "@base/*": ["./*"]
+      },
+      "outDir": "dist",
+      "lib": [
+          "es6",
+          "dom"
+      ]
+  },
+  "include": [
+      "src/**/*"
+  ],
+  "exclude": [
+      "node_modules"
+  ]
+}

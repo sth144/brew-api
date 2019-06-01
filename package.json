@@ -1,0 +1,50 @@
+{
+  "name": "brew-api",
+  "version": "1.0.0",
+  "description": "An API for managing beer recipes.",
+  "main": "dist/index.js",
+  "scripts": {
+    "deploy": "gcloud app deploy",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sth144/brew-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sth144/brew-api/issues"
+  },
+  "homepage": "https://github.com/sth144/brew-api#readme",
+  "_moduleAliases": {
+    "@controllers": "dist/controllers",
+    "@db": "dist/db",
+    "@lib": "dist/lib",
+    "@models": "dist/models",
+    "@routes": "dist/routes",
+    "@base": "dist"
+  },
+  "dependencies": {
+    "@google-cloud/datastore": "^3.1.2",
+    "@types/node": "^11.13.5",
+    "body-parser": "^1.18.3",
+    "dotenv": "^7.0.0",
+    "express": "^4.16.4",
+    "module-alias": "^2.2.0",
+    "next": "^8.1.0"
+  },
+  "cloud-repo-tools": {
+    "test": {
+      "app": {
+        "msg": "Last 10 visits:"
+      }
+    },
+    "requiresKeyFile": true,
+    "requiresProjectId": true
+  },
+  "devDependencies": {
+    "@types/core-js": "^2.5.0"
+  }
+}
