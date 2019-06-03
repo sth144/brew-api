@@ -1,27 +1,3 @@
-// TODO: create style model
-export interface IBeerStyle {
-    category: string,
-    countryOfOrigin: string,
-    ibu: number,
-    abv: number
-}
-
-
-// TODO: create recipe model
-export interface IBeerRecipe {
-    style: IBeerStyle,
-    malt: string,
-    hops: string,
-    yeast: string,
-    fermentationTemp: number
-    owner: IUser
-}
-
-// TODO: create user model
-export interface IUser {
-
-}
-
 // TODO: Your database needs to have at least two entities as well as some 
 //      sort user representation. In the relational database sense there 
 //      will be at a minimum 3 entities (one of which are users) and a 

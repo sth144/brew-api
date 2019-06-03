@@ -20,7 +20,7 @@ export class UsersRouterWrapper extends RouterWrapper {
     }
 
     protected setupRoutes(): void {
-        this.usersRouter.get("/:user_id/ships", this.verifier, async (req, res) => {
+        this.usersRouter.get("/:user_id", this.verifier, async (req, res) => {
             this.directRequest(req, res, this.usersController.handleGet, (req, res, result) => {
                 res.status(200).send(result);
             })

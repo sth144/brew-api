@@ -22,7 +22,7 @@ export class NoSqlClient {
     private constructor() { 
         this.datastore = new Datastore({
             projectId: PROJECT_ID,
-            keyFilename: "" // TODO: add key file
+            keyFilename: "" // TODO: add key file?
         });
         console.log("Datastore initialized");
     }
