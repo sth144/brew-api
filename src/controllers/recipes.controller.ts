@@ -3,7 +3,6 @@ import { IRequest } from "@lib/request.interface";
 import { IError, ErrorTypes } from "@lib/error.interface";
 import { RecipesModel } from "@models/recipes.model";
 
-
 /**
  * validates and processes input for the model
  */
@@ -42,7 +41,9 @@ export class RecipesController extends Controller {
             return <IError>{ error_type: ErrorTypes.INTERFACE }
         } else {
             /** create and return key to new recipes */
-            let newKey = await this.recipesModel.createRecipe(/** TODO: */);
+            let newKey = await this.recipesModel.createRecipe(
+                request.body.style, request.body.malt, request.body.hops, 
+                request.body.yeast, request.body.owner);
             return newKey;
         }
     }
@@ -76,9 +77,18 @@ export class RecipesController extends Controller {
     /** construct edit object to pass to model (for patching) */
     private buildEditFromRequest(_request: IRequest): object {
         const _edit = {};
-        
-        // TODO: build edit
-        
+        if (_request.body.style)
+            Object.assign(_edit, { style: _request.body.style });
+        if (_request.body.malt)
+            Object.assign(_edit, { malt: _request.body.malt });
+        if (_request.body.hops)
+            Object.assign(_edit, { hops: _request.body.hops });
+        if (_request.body.yeast)
+            Object.assign(_edit, { yeast: _request.body.yeast });
+        if (_request.body.fermentationTemp)
+            Object.assign(_edit, { fermentationTemp: _request.body.fermentationTemp });
+        if (_request.body.owner)
+            Object.assign(_edit, { owner: _request.body.owner });
         return _edit;
     }
 }

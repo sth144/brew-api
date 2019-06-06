@@ -21,8 +21,7 @@ export class NoSqlClient {
 
     private constructor() { 
         this.datastore = new Datastore({
-            projectId: PROJECT_ID,
-            keyFilename: "" // TODO: add key file?
+            projectId: PROJECT_ID
         });
         console.log("Datastore initialized");
     }
@@ -40,9 +39,7 @@ export class NoSqlClient {
 
     /** get an entire collection (every instance of a resource) */
     public async datastoreGetCollection(_kind: string): Promise<any> {
-        console.log("getting " + _kind);
         const query: Query = this.datastore.createQuery(_kind);
-        console.log("running query");
         let queryResult: any[] = await this.datastore.runQuery(query)
         queryResult = queryResult[0];
         return queryResult;

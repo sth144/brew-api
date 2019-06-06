@@ -16,7 +16,7 @@ export class LoginController extends WriteOnlyController {
         const password = request.body.password;
         const options = {
             method: "POST",
-            url: `https://dev-hdtedn05.auth0.com/oauth/token`, 
+            url: `https://dev-xtakj3is.auth0.com/oauth/token`, 
             headers: { "content-type": "application/json" },
             body: {
                 grant_type: "password",

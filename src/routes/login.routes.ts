@@ -29,7 +29,7 @@ export class LoginRouterWrapper extends RouterWrapper {
                         res.status(500).send(error);
                     } else {
                         /** send JWT back */
-                        res.send(body)
+                        res.send(JSON.stringify(body));
                     }
                 });
             });

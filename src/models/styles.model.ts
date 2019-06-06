@@ -5,7 +5,6 @@ import { Datastore, Query } from "@google-cloud/datastore";
 import { API_URL } from "@routes/urls";
 import { Formats } from "@lib/formats.interface";
 
-// TODO: create style model
 export interface IStylePrototype {
     id?: string,
     name: string,
@@ -69,7 +68,12 @@ export class StylesModel extends Model {
      * determine if an object conforms to the IStyle interface
      */
     public confirmInterface(obj: any): boolean {
-        // TODO: implement confirm interface
+        if (   !("name" in obj) || !("category" in obj) || !("ibu" in obj)
+            || !("abv" in obj) 
+            || !(typeof obj.name === "string")
+            || !(typeof obj.category === "string")
+            || !(typeof obj.ibu === "number")
+            || !(typeof obj.avv === "number")) return false;
         return true;
     }
 
@@ -131,19 +135,43 @@ export class StylesModel extends Model {
         return page;
     }
 
-    public async createStyle()
+    public async createStyle(
+        _name: string, _category: string, _ibu: number, _abv: number)
         : Promise<string | IError> {
-        // TODO: implement create
-        return;
+        const newData: IStylePrototype = {
+            name: _name,
+            category: _category,
+            ibu: _ibu,
+            abv: _abv
+        }    
+        const newKey = await this.nosqlClient.datastoreSave(STYLES, newData);
+
+        Object.assign(newData, { id: `${newKey.id}` });
+        Object.assign(newData, { self: `${API_URL}/${STYLES}/${newKey.id}` });
+        
+        const newStyle = {
+            key: newKey,
+            data: newData
+        }
+
+        await this.nosqlClient.datastoreUpsert(newStyle);
+
+        return newKey;
     }
 
     public async deleteStyle(styleId: string): Promise<any> {
-        return this.nosqlClient.datastoreDelete(STYLES, styleId);
-        // TODO: side effect
+        return this.nosqlClient.datastoreDelete(STYLES, styleId)
+            .then(() => {
+                for (let deleteCallback of this.deleteCallbacks)
+                    deleteCallback(styleId);
+            })
     }
 
     public async editStyle(styleId: string, editStyle: Partial<IStylePrototype>)
         : Promise<any | IError> {
-        // TODO: implement edit
+        if (await this.styleExistsById(styleId)) {
+            let edited = await this.nosqlClient.datastoreEdit(STYLES, styleId, editStyle);
+            return edited;
+        } else return <IError>{ error_type: ErrorTypes.NOT_FOUND }    
     }
 }

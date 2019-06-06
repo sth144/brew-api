@@ -2,7 +2,7 @@ import * as jwt from "express-jwt";
 import * as jwksRsa from "jwks-rsa";
 import * as jwtDecode from "jwt-decode";
 
-export const PROJECT_ID = "hindss-project";
+export const PROJECT_ID = "hindss-final";
 
 /**
  * Service which provides global access to a jwt verifier and jwt decoding method.
@@ -23,9 +23,9 @@ export class AuthenticationService {
                 cache: true,
                 rateLimit: true,
                 jwksRequestsPerMinute: 5,
-                jwksUri: "https://dev-hdtedn05.auth0.com/.well-known/jwks.json" 
+                jwksUri: "https://dev-xtakj3is.auth0.com/.well-known/jwks.json" 
             }),
-            issuer: "https://dev-hdtedn05.auth0.com/", 
+            issuer: "https://dev-xtakj3is.auth0.com/", 
             algorithms: ["RS256"] 
         });
     }

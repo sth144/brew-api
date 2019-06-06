@@ -42,7 +42,8 @@ export class StylesController extends Controller {
             return <IError>{ error_type: ErrorTypes.INTERFACE }
         } else {
             /** create and return key to new styles */
-            let newKey = await this.stylesModel.createStyle(/** TODO: */);
+            const newKey = await this.stylesModel.createStyle(
+                request.body.name, request.body.category, request.body.ibu, request.body.abv);
             return newKey;
         }
     }
@@ -53,7 +54,7 @@ export class StylesController extends Controller {
             /** construct edit from request */
             const edit = this.buildEditFromRequest(request);
 
-            let editConfirmed = await this.stylesModel.editStyle(
+            const editConfirmed = await this.stylesModel.editStyle(
                 request.params.style_id, edit);
             return editConfirmed;
         } return <IError>{ error_type: ErrorTypes.NO_ID };        
@@ -76,9 +77,14 @@ export class StylesController extends Controller {
     /** construct edit object to pass to model (for patching) */
     private buildEditFromRequest(_request: IRequest): object {
         const _edit = {};
-        
-        // TODO: build edit
-        
+        if (_request.body.name)
+            Object.assign(_edit, { name: _request.body.name });
+        if (_request.body.category)
+            Object.assign(_edit, { category: _request.body.category });
+        if (_request.body.ibu)
+            Object.assign(_edit, { ibu: _request.body.ibu });
+        if (_request.body.abv)
+            Object.assign(_edit, { abv: _request.body.abv });
         return _edit;
     }
 }
