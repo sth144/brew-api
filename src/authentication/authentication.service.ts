@@ -26,11 +26,12 @@ export class AuthenticationService {
                 jwksUri: "https://dev-xtakj3is.auth0.com/.well-known/jwks.json" 
             }),
             issuer: "https://dev-xtakj3is.auth0.com/", 
-            algorithms: ["RS256"] 
+            algorithms: ["RS256"],
         });
     }
 
     public decodeJwt(jwt) {
+        if (jwt === undefined) return;
         return jwtDecode(jwt);
     }
-}
+} 

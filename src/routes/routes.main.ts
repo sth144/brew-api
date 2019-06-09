@@ -16,10 +16,12 @@ export const router: Express.Router = Express.Router();
 /** attach error callbacks to subrouters */
 LoginRouterWrapper.Instance.attachErrorCallback(_errorHandler);
 UsersRouterWrapper.Instance.attachErrorCallback(_errorHandler);
+RecipesRouterWrapper.Instance.attachErrorCallback(_errorHandler);
+StylesRouterWrapper.Instance.attachErrorCallback(_errorHandler);
 
 /** hook up the routers */
 router.use(`/login`, LoginRouterWrapper.Instance.loginRouter);
-router.use(`/${USERS}`, UsersRouterWrapper.Instance.usersRouter);
+router.use(`/users`, UsersRouterWrapper.Instance.usersRouter);
 router.use(`/${STYLES}`, StylesRouterWrapper.Instance.stylesRouter);
 router.use(`/${RECIPES}`, RecipesRouterWrapper.Instance.recipesRouter);
 

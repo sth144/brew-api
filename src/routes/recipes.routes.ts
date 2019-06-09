@@ -3,6 +3,7 @@ import { RouterWrapper } from "./router.wrapper";
 import { RecipesController } from "@controllers/recipes.controller";
 import { IRequest } from "@lib/request.interface";
 import { isError, IError } from "@lib/error.interface";
+import { AuthenticationService } from "@base/authentication/authentication.service";
 
 // Entity Requirements
 // TODO: The root collection URL for an entity must implement paging 
@@ -36,7 +37,7 @@ export class RecipesRouterWrapper extends RouterWrapper {
         return this._instance;
     }
 
-    // TODO: implement JWT auth
+    private verifier = AuthenticationService.Instance.JwtVerifier;
 
     public recipesRouter: Express.Router;
     private recipesController: RecipesController;
@@ -44,31 +45,45 @@ export class RecipesRouterWrapper extends RouterWrapper {
     private constructor() {
         super();
         this.recipesRouter = Express.Router();
-        this.recipesController = new RecipesController();
+        this.recipesController = new RecipesController(["application/json"]);
         this.setupRoutes();
     }
     
     protected setupRoutes(): void {
-        this.recipesRouter.get("/(:recipe_id)?", async (req: IRequest, res): Promise<void> => {
+        this.recipesRouter.get("/(:recipe_id)?", this.verifier, async (req:   IRequest, res): Promise<void> => {
             this.directRequest(req, res, this.recipesController.handleGet, (req, res, result) => {
                 res.status(200).json(result);
             });
         });
 
-        this.recipesRouter.post("/", async (req: IRequest, res): Promise<void> => {
+        this.recipesRouter.post("/", this.verifier, async (req: IRequest, res): Promise<void> => {
+            console.log("post")
             this.directRequest(req, res, this.recipesController.handlePost, (req, res, result) => {
+                console.log("gonna send");
                 res.status(201).send(`{ "id": ${result.id} }`);
-            });
+                console.log("sent");
+            }).catch(() => { console.log("caught"); });
         });
 
-        this.recipesRouter.patch("/:recipe_id", async (req: IRequest, res): Promise<void> => {
-            this.directRequest(req, res, this.recipesController.handlePatch, (req, res, result) => {
+        this.recipesRouter.put("/:recipe_id", this.verifier, async (req: IRequest, res): Promise<void> => {
+            console.log("put");
+            this.directRequest(req, res, this.recipesController.handlePut, (req, res, result) => {
                 res.status(200).end();
             });
         });
 
-        this.recipesRouter.delete("/:recipe_id", /** this.verifier */ async (req: IRequest, res): Promise<void> => {
+        this.recipesRouter.delete("/:recipe_id", this.verifier, async (req: IRequest, res): Promise<void> => {
             this.directRequest(req, res, this.recipesController.handleDelete, (req, res, result) => {
+                res.status(204).end();
+            });
+        });
+
+        /**
+         * unsecure (for testing)
+         */
+        this.recipesRouter.delete("/unsecure/:recipe_id",async (req: IRequest, res): Promise<void> => {
+            console.log("unsecure delete");
+            this.directRequest(req, res, this.recipesController.handleDeleteUnsecure, (req, res, result) => {
                 res.status(204).end();
             });
         });

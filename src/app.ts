@@ -15,6 +15,11 @@ export class App {
 
         this._app.use(bodyParser.json());
         this._app.use("/", router);
+        this._app.use( (err, req, res, next) => {
+            if (err.name === 'UnauthorizedError') { 
+                res.status(401).send();
+            }
+        });
     }
 
     public async start(): Promise<any> {

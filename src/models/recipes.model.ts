@@ -8,10 +8,7 @@ import { API_URL } from "@routes/urls";
 import { Formats } from "@lib/formats.interface";
 
 export interface IRecipePrototype {
-    style?: {
-        id: string,
-        self: string
-    } 
+    style: string
 
     id?: string
     malt: string,
@@ -70,15 +67,13 @@ export class RecipesModel extends Model {
      * determine if an object conforms to the IStyle interface
      */
     public confirmInterface(obj: any): boolean {
+        // TODO: associate with owner at creation
         if (   !("style" in obj) || !("malt" in obj) || !("hops" in obj)
-            || !("yeast" in obj) || ("fermentationTemp" in obj)
-            || !("owner" in obj)
+            || !("yeast" in obj)
             || !(typeof obj.style === "string")
             || !(typeof obj.malt === "string")
             || !(typeof obj.hops === "string")
-            || !(typeof obj.yeast === "string")
-            || !(typeof obj.fermentationTemp === "number")
-            || !(typeof obj.owner === "string")) return false;
+            || !(typeof obj.yeast === "string")) return false;
         return true;
     }
 
@@ -117,7 +112,7 @@ export class RecipesModel extends Model {
     }
 
     public async getAllRecipesPaginated(_cursor?): Promise<any> {
-        let query: Query = this.nosqlClient.datastore.createQuery(RECIPES).limit(3);
+        let query: Query = this.nosqlClient.datastore.createQuery(RECIPES).limit(5);
         if (_cursor !== undefined) {
             query = query.start(_cursor);
         }
@@ -167,6 +162,7 @@ export class RecipesModel extends Model {
         }
         
         const allStyles = await this.stylesModelRef.getAllStyles();
+
         if (isError(allStyles)) return <IError>{ error_type: ErrorTypes.NOT_FOUND }
         let allUsers = await this.usersModelRef.getAllUsers();
         if (isError(allUsers)) return <IError>{ error_type: ErrorTypes.NOT_FOUND }
@@ -191,6 +187,7 @@ export class RecipesModel extends Model {
         }
         Object.assign(newData, { style: styleRef });
         
+
         const locatedUsers = (allUsers as IUserResult[]).filter(x => x.username === _ownerName);
         const ownerRef = {
             id: null,
@@ -202,6 +199,11 @@ export class RecipesModel extends Model {
         }
         Object.assign(newData, { owner: ownerRef });
 
+        await this.usersModelRef.addRecipeToUser(ownerRef.id, {
+            id: newData.id,
+            self: newData.self
+        });
+
         const newRecipe = {
             key: newKey,
             data: newData
@@ -210,14 +212,10 @@ export class RecipesModel extends Model {
         await this.nosqlClient.datastoreUpsert(newRecipe);
 
         return newKey;
-
-        // TODO: side effect, add to users recipes
     }
 
     public async deleteRecipe(recipeId: string): Promise<any> {
         return this.nosqlClient.datastoreDelete(RECIPES, recipeId);
-
-        // TODO: side effect, delete from users recipes
     }
 
     private handleStyleDeleted = async (styleId: string): Promise<any> => {
@@ -231,6 +229,8 @@ export class RecipesModel extends Model {
                             self: null
                         }
                     });
+                    let rec = await this.getRecipeById(recipe.id);
+                    return;
                 }
             }
         }
@@ -250,7 +250,7 @@ export class RecipesModel extends Model {
         }
     }
 
-    public async editRecipe(recipeId: string, editRecipe: Partial<IRecipePrototype>)
+    public async editRecipe(recipeId: string, editRecipe: Partial<IRecipeResult>)
         : Promise<any | IError> {
         if (await this.recipeExistsById(recipeId)) {
             let edited = await this.nosqlClient.datastoreEdit(RECIPES, recipeId, editRecipe);

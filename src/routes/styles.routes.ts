@@ -44,7 +44,7 @@ export class StylesRouterWrapper extends RouterWrapper {
     private constructor() {
         super();
         this.stylesRouter = Express.Router();
-        this.stylesController = new StylesController();
+        this.stylesController = new StylesController(["application/json"]);
         this.setupRoutes();
     }
     
@@ -61,13 +61,23 @@ export class StylesRouterWrapper extends RouterWrapper {
             });
         });
 
-        this.stylesRouter.patch("/:style_id", async (req: IRequest, res): Promise<void> => {
-            this.directRequest(req, res, this.stylesController.handlePatch, (req, res, result) => {
+        this.stylesRouter.put("/:style_id", async (req: IRequest, res): Promise<void> => {
+            this.directRequest(req, res, this.stylesController.handlePut, (req, res, result) => {
                 res.status(200).end();
             });
         });
 
         this.stylesRouter.delete("/:style_id", async (req: IRequest, res): Promise<void> => {
+            this.directRequest(req, res, this.stylesController.handleDelete, (req, res, result) => {
+                res.status(204).end();
+            });
+        });
+    
+        /**
+         * unsecure (for testing)
+         */
+        this.stylesRouter.delete("/unsecure/:recipe_id",async (req: IRequest, res): Promise<void> => {
+            console.log("unsecure delete syt")
             this.directRequest(req, res, this.stylesController.handleDelete, (req, res, result) => {
                 res.status(204).end();
             });

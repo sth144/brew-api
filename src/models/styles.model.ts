@@ -41,11 +41,10 @@ export class StylesModel extends Model {
         return this._instance;
     }
 
-    protected nosqlClient: NoSqlClient;
+    protected nosqlClient: NoSqlClient = NoSqlClient.Instance;
 
     private constructor() { 
         super();        
-        this.nosqlClient = NoSqlClient.Instance;
 
         console.log("StylesModel initialized");
     }
@@ -73,7 +72,7 @@ export class StylesModel extends Model {
             || !(typeof obj.name === "string")
             || !(typeof obj.category === "string")
             || !(typeof obj.ibu === "number")
-            || !(typeof obj.avv === "number")) return false;
+            || !(typeof obj.abv === "number")) return false;
         return true;
     }
 
@@ -112,7 +111,7 @@ export class StylesModel extends Model {
     }
 
     public async getAllStylesPaginated(_cursor?): Promise<any> {
-        let query: Query = this.nosqlClient.datastore.createQuery(STYLES).limit(3);
+        let query: Query = this.nosqlClient.datastore.createQuery(STYLES).limit(5);
         if (_cursor !== undefined) {
             query = query.start(_cursor);
         }
@@ -161,9 +160,9 @@ export class StylesModel extends Model {
 
     public async deleteStyle(styleId: string): Promise<any> {
         return this.nosqlClient.datastoreDelete(STYLES, styleId)
-            .then(() => {
+            .then(async () => {
                 for (let deleteCallback of this.deleteCallbacks)
-                    deleteCallback(styleId);
+                    await deleteCallback(styleId);
             })
     }
 

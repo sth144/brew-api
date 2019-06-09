@@ -10,12 +10,16 @@ import { StylesModel } from "@models/styles.model";
 export class StylesController extends Controller {
     private stylesModel: StylesModel = StylesModel.Instance;
 
-    constructor() {
-        super();
+    constructor(acceptTypes: string[]) {
+        super(acceptTypes);
     }
 
     /** called by router when a get request is received for styles resource */
     public handleGet = async (request: IRequest): Promise<IError | any> => {
+        if (this.acceptTypes.indexOf(request.headers.accept) === -1) {
+            return <IError>{ error_type: ErrorTypes.BAD_MEDIA_TYPE }
+        }
+
         let result = {};
         if (!request.params.style_id) {
             /** all styles selected */
@@ -37,6 +41,10 @@ export class StylesController extends Controller {
 
     /** called by router when a post request received for styles resource */
     public handlePost = async (request: IRequest): Promise<IError | any> => {
+        if (this.acceptTypes.indexOf(request.headers.accept) === -1) {
+            return <IError>{ error_type: ErrorTypes.BAD_MEDIA_TYPE }
+        }
+        
         /** enforce data model */
         if (!this.stylesModel.confirmInterface(request.body)) {
             return <IError>{ error_type: ErrorTypes.INTERFACE }
@@ -48,8 +56,12 @@ export class StylesController extends Controller {
         }
     }
 
-    /** called by router when a patch request received for styles resource */
-    public handlePatch = async (request: IRequest): Promise<IError | any> => {
+    /** called by router when a put request received for styles resource */
+    public handlePut = async (request: IRequest): Promise<IError | any> => {
+        if (this.acceptTypes.indexOf(request.headers.accept) === -1) {
+            return <IError>{ error_type: ErrorTypes.BAD_MEDIA_TYPE }
+        }
+        
         if (request.params.style_id) {
             /** construct edit from request */
             const edit = this.buildEditFromRequest(request);
@@ -62,6 +74,10 @@ export class StylesController extends Controller {
 
     /** called by router when delete request received for for styles resource */
     public handleDelete = async (request: IRequest): Promise<IError | any> => {
+        if (this.acceptTypes.indexOf(request.headers.accept) === -1) {
+            return <IError>{ error_type: ErrorTypes.BAD_MEDIA_TYPE }
+        }
+        
         /** confirm id in request */
         if (request.params.style_id) {
             /**

@@ -28,7 +28,7 @@ export class UsersRouterWrapper extends RouterWrapper {
     }
 
     public usersRouter: Express.Router = Express.Router();
-    private usersController: UsersController = new UsersController();
+    private usersController: UsersController = new UsersController(["application/json"]);
     private verifier = AuthenticationService.Instance.JwtVerifier;
 
     private constructor() {
@@ -40,7 +40,7 @@ export class UsersRouterWrapper extends RouterWrapper {
         this.usersRouter.get("/:user_id", this.verifier, async (req, res) => {
             this.directRequest(req, res, this.usersController.handleGet, (req, res, result) => {
                 res.status(200).send(result);
-            })
+            });
         });
 
 
@@ -54,21 +54,31 @@ export class UsersRouterWrapper extends RouterWrapper {
                         // insert user in datastore
                         this.usersController.postDatastore(req, body._id)
                             .then(result => {
-                                res.send(result);
+                                res.status(201).send(result);
                             })
                     }
                 });
             })
         });
 
-        this.usersRouter.delete("/", this.verifier, async (req, res) => {
+        this.usersRouter.delete("/(:user_id)?", this.verifier, async (req, res) => {
             this.directRequest(req, res, this.usersController.handleDelete, (req, res, result) => {
                 /** 
                  * note: this route allows any authenticated user to delete all users
-                 *  - useful for development
+                 *  - useful for development 
                  *  - would be modified/removed in production
                  */
-                res.status(204).send(result);
+                res.status(204).end();
+            });
+        })
+
+        this.usersRouter.delete("/unsecure/:user_id", async (req, res) => {
+            /** 
+             * note: this route is insecure
+             *  - would be modified/removed in production
+             */  
+            this.directRequest(req, res, this.usersController.handleDeleteUnsecure, (req, res, result) => {
+                res.status(204).end();
             });
         })
     }

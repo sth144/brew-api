@@ -12,17 +12,24 @@ export class UsersController extends Controller {
     
     private adminClientRef: AdminClient = AdminClient.Instance;
 
-    constructor() {
-        super();
+    constructor(acceptTypes: string[]) {
+        super(acceptTypes);
     }
 
     public handleGet = async (request: IRequest): Promise<any | IError> => {
-        const nameShouldBe = AuthenticationService.Instance.decodeJwt(
-            request.headers.authorization).name
+        if (this.acceptTypes.indexOf(request.headers.accept) === -1) {
+            return <IError>{ error_type: ErrorTypes.BAD_MEDIA_TYPE }
+        }
+        
+        const decoded = AuthenticationService.Instance.decodeJwt(
+            request.headers.authorization); 
+        if (decoded === undefined) { return <IError>{ error_type: ErrorTypes.UNAUTHORIZED } }
+        const nameShouldBe = decoded.nickname
+
         const allUsers = await this.usersModel.getAllUsers();
         if (!isError(allUsers)) {
             const usersFiltered = (allUsers as IUserResult[])
-                .filter(x => x.id === request.body.user_id);
+                .filter(x => x.id === request.params.user_id);
             if (usersFiltered.length) {
                 let user = usersFiltered[0];
                 if (user.username === nameShouldBe) {
@@ -33,12 +40,19 @@ export class UsersController extends Controller {
     }
 
     public handlePut = async (request: IRequest): Promise<any | IError> => {
-        const nameShouldBe = AuthenticationService.Instance.decodeJwt(
-            request.headers.authorization).name
+        if (this.acceptTypes.indexOf(request.headers.accept) === -1) {
+            return <IError>{ error_type: ErrorTypes.BAD_MEDIA_TYPE }
+        }
+        
+        const decoded = AuthenticationService.Instance.decodeJwt(
+            request.headers.authorization); 
+        if (decoded === undefined) { return <IError>{ error_type: ErrorTypes.UNAUTHORIZED } }
+        const nameShouldBe = decoded.nickname
+       
         const allUsers = await this.usersModel.getAllUsers();
         if (!isError(allUsers)) {
             const usersFiltered = (allUsers as IUserResult[])
-                .filter(x => x.id === request.body.user_id);
+                .filter(x => x.id === request.params.user_id);
             if (usersFiltered.length) {
                 let user = usersFiltered[0];
                 if (user.username === nameShouldBe) {
@@ -52,6 +66,10 @@ export class UsersController extends Controller {
     }
 
     public handlePost = async (request: IRequest): Promise<any | IError> => {
+        if (this.acceptTypes.indexOf(request.headers.accept) === -1) {
+            return <IError>{ error_type: ErrorTypes.BAD_MEDIA_TYPE }
+        }
+        
         // TODO: check username unique
         // TODO: figure this out
         const username = request.body.username;
@@ -80,31 +98,37 @@ export class UsersController extends Controller {
     }
 
     public postDatastore = async(request: IRequest, auth0id: string) => {
+        if (this.acceptTypes.indexOf(request.headers.accept) === -1) {
+            return <IError>{ error_type: ErrorTypes.BAD_MEDIA_TYPE }
+        }
+        
         let user = await this.usersModel.createUser(request.body.username, auth0id);
         return user;
     }
 
     public handleDelete = async (request: IRequest): Promise<any | IError> => {
-        if (request.body.user_id) {
+        if (this.acceptTypes.indexOf(request.headers.accept) === -1) {
+            return <IError>{ error_type: ErrorTypes.BAD_MEDIA_TYPE }
+        }
+        
+        if (request.params.user_id) {
             const usr = await this.usersModel.getUserById(request.body.user_id);
-            await this.usersModel.deleteUser(request.body.user_id);
+            await this.usersModel.deleteUser(request.params.user_id);
             const authId = (usr as IUserResult).auth0id;
             //this.adminClientRef.deleteUser(authId);
         } else {
-            /** 
-             * this is unsecure, and would be removed in a production app
-             *  - allows any user to delete all users (used for development)
-             */
-            const allUsers = await this.usersModel.getAllUsers() as IUserResult[];
-            if (!isError(allUsers)) {
-                for (let user of allUsers) {
-                    const authId = user.auth0id;
-                    await this.usersModel.deleteUser(user.id);
+            return <IError>{ error_type: ErrorTypes.METHOD_NOT_ALLOWED }
+        }
+    }
 
-                    // TODO: delete from Auth0?
-                    //this.adminClientRef.deleteUser(authId);
-                }
-            }
+    public handleDeleteUnsecure = async (request: IRequest): Promise<any | IError> => {
+        if (this.acceptTypes.indexOf(request.headers.accept) === -1) {
+            return <IError>{ error_type: ErrorTypes.BAD_MEDIA_TYPE }
+        }
+        
+        if (request.params.user_id) {
+            const confirmDeleted = await this.usersModel.deleteUser(request.params.user_id);
+            return confirmDeleted;
         }
     }
 

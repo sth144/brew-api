@@ -7,6 +7,7 @@ export interface IUserPrototype {
     id?: string,
     username: string,
     auth0id: string,
+    recipes?: {id: string, self: string}[]
     self?: string
 }
 
@@ -58,13 +59,14 @@ export class UsersModel extends Model {
     public async createUser(_username: string, _auth0id: string): Promise<any> {
         const newData: Partial<IUserPrototype> = {
             username: _username,
-            auth0id: _auth0id
+            auth0id: _auth0id,
+            recipes: []
         };
 
         let newKey = await this.nosqlClient.datastoreSave(USERS, newData);
 
-        Object.assign(newData, { id: `${newKey}` });
-        Object.assign(newData, { self: `${API_URL}/${USERS}/${newKey}` });
+        Object.assign(newData, { id: `${newKey.id}` });
+        Object.assign(newData, { self: `${API_URL}/${USERS}/${newKey.id}` });
 
         const newUser = {
             key: newKey,
@@ -116,5 +118,14 @@ export class UsersModel extends Model {
                     deleteCallback(userId);
                 }
             });
+    }
+
+    public async addRecipeToUser(userId: string, recipeRef: any) {
+        const user = await this.getUserById(userId) as IUserResult;
+        if (!isError(user)) {
+            this.editUser(userId, {
+                recipes: [...user.recipes, recipeRef]
+            });
+        } return <IError>{ error_type: ErrorTypes.NOT_FOUND }
     }
 }

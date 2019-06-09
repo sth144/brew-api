@@ -4,11 +4,15 @@ import { IRequest } from "@lib/request.interface";
 
 
 export class LoginController extends WriteOnlyController {
-    constructor() {
-        super();
+    constructor(acceptTypes: string[]) {
+        super(acceptTypes);
     }
 
     public handlePost = async (request: IRequest): Promise<any | IError> => {
+        if (this.acceptTypes.indexOf(request.headers.accept) === -1) {
+            return <IError>{ error_type: ErrorTypes.BAD_MEDIA_TYPE }
+        }
+        
         /** 
          * login route takes user name and password to retrieve jwt token
          */

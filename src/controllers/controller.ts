@@ -1,11 +1,19 @@
 export abstract class ReadOnlyController {
-    constructor() { }
+    protected acceptTypes: string[];
+
+    constructor(acceptTypes: string[]) { 
+        this.acceptTypes = acceptTypes;
+    }
 
     abstract async handleGet(request: object): Promise<object>;
 }
 
-export abstract class WriteOnlyController {
-    constructor() { }
+export abstract class WriteOnlyController {    
+    protected acceptTypes: string[];
+
+    constructor(acceptTypes: string[]) { 
+        this.acceptTypes = acceptTypes;
+    }
 
     abstract async handlePost(request: object): Promise<object>
 }
@@ -14,8 +22,9 @@ export abstract class WriteOnlyController {
  * base controller class
  */
 export abstract class Controller extends ReadOnlyController {
-    constructor() { 
-        super();
+
+    constructor(acceptTypes: string[]) { 
+        super(acceptTypes);
     }
 
     abstract async handlePost(request: object): Promise<object>;

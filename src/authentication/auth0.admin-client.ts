@@ -11,6 +11,7 @@ export class AdminClient {
     private authClient: any;
 
     private constructor() { 
+        // TODO: implement admin client to enable deletion of auth0 users?
         // console.log(process.env.CLIENT_ID)
         // this.mgmtClient = new ManagementClient({
         //     domain: 'dev-xtakj3is.auth0.com',
