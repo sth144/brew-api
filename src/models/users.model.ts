@@ -15,7 +15,6 @@ export interface IUserResult {
     id: string,
     username: string,
     auth0id: string,
-    // TODO: implement storing of user recipes
     recipes: {id: string, self: string}[]
     //jwt: string,
     self: string
@@ -101,15 +100,12 @@ export class UsersModel extends Model {
     }
 
     public async editUser(userId: string, editUser: Partial<IUserPrototype>) {
-        // TODO: should you really be able to edit a user?...
         if (await this.userExistsById(userId)) {
             const edited = await this.nosqlClient.datastoreEdit(
                 USERS, userId, editUser);
             return edited;
         } return <IError>{ error_type: ErrorTypes.NOT_FOUND }
     }
-
-    // TODO: method to remove recipe from user?
 
     public async deleteUser(userId: string) {
         this.nosqlClient.datastoreDelete(USERS, userId)

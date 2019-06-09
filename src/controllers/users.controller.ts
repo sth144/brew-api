@@ -70,8 +70,6 @@ export class UsersController extends Controller {
             return <IError>{ error_type: ErrorTypes.BAD_MEDIA_TYPE }
         }
         
-        // TODO: check username unique
-        // TODO: figure this out
         const username = request.body.username;
         const password = request.body.password;
         const email = request.body.email;

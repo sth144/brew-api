@@ -67,7 +67,6 @@ export class RecipesModel extends Model {
      * determine if an object conforms to the IStyle interface
      */
     public confirmInterface(obj: any): boolean {
-        // TODO: associate with owner at creation
         if (   !("style" in obj) || !("malt" in obj) || !("hops" in obj)
             || !("yeast" in obj)
             || !(typeof obj.style === "string")
