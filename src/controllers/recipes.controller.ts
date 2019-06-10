@@ -138,7 +138,9 @@ export class RecipesController extends Controller {
                     }
                 }
             } return <IError>{ error_type: ErrorTypes.NOT_FOUND }
-        } return <IError>{ error_type: ErrorTypes.NO_ID }
+        } else {
+            return <IError>{ error_type: ErrorTypes.METHOD_NOT_ALLOWED }
+        }
     }
 
     public handleDeleteUnsecure = async (request: IRequest): Promise<IError | any> => {

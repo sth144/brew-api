@@ -87,7 +87,9 @@ export class StylesController extends Controller {
             let deleteConfirmed
                 = await this.stylesModel.deleteStyle(request.params.style_id)    
             return deleteConfirmed;
-        } return <IError>{ error_type: ErrorTypes.NO_ID }
+        }  else {
+            return <IError>{ error_type: ErrorTypes.METHOD_NOT_ALLOWED }
+        }
     }
 
     /** construct edit object to pass to model (for patching) */

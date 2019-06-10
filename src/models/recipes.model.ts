@@ -126,7 +126,12 @@ export class RecipesModel extends Model {
             next_link = `${API_URL}/recipes?cursor=${next_cursor}`;
         }
 
+        /** get total count */
+        const all = await this.getAllRecipes();
+        const totalCount = (all as IRecipeResult[]).length;
+
         const page = {
+            collectionSize: totalCount,
             items: entities,
             next: next_link
         }

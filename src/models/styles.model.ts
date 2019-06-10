@@ -126,7 +126,12 @@ export class StylesModel extends Model {
             next_link = `${API_URL}/styles?cursor=${next_cursor}`;
         }
 
+        /** get total count */
+        const all = await this.getAllStyles();
+        const totalCount = (all as IStyleResult[]).length;
+
         const page = {
+            collectionSize: totalCount,
             items: entities,
             next: next_link
         }
