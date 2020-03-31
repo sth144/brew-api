@@ -37,7 +37,7 @@
     "jwks-rsa": "^1.5.1",
     "jwt-decode": "^2.2.0",
     "module-alias": "^2.2.0",
-    "next": "^8.1.0"
+    "next": "^9.3.3"
   },
   "cloud-repo-tools": {
     "test": {
